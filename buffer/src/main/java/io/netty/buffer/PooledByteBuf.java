@@ -185,6 +185,7 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
 
     final ByteBuffer _internalNioBuffer(int index, int length, boolean duplicate) {
         index = idx(index);
+        // duplicate为false，所以使用的是第二个
         ByteBuffer buffer = duplicate ? newInternalNioBuffer(memory) : internalNioBuffer();
         buffer.limit(index + length).position(index);
         return buffer;
@@ -250,6 +251,8 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
     @Override
     public final int setBytes(int index, ScatteringByteChannel in, int length) throws IOException {
         try {
+            // key，调用 Java 原生 SocketChannel 的 ScatteringByteChannel.read()方法
+            // read()方法的参数是Java原生的ByteBuffer
             return in.read(internalNioBuffer(index, length));
         } catch (ClosedChannelException ignored) {
             return -1;
