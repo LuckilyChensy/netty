@@ -51,6 +51,10 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioServerSocketChannel.class);
 
+/**
+ * 1.1 使用Java底层的SelectorProvider创建一个Java原生的ServerSocketChannel
+ * windows平台下使用的是WindowsSelectorProvider，因为ServerSocketChannel是跟操作系统交互的，所以是平台相关的，每个平台下都不一样
+ */
     private static ServerSocketChannel newSocket(SelectorProvider provider) {
         try {
             /**
@@ -59,6 +63,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
              *
              *  See <a href="https://github.com/netty/netty/issues/2308">#2308</a>.
              */
+            // key，创建Java原生ServerSocketChannel
             return provider.openServerSocketChannel();
         } catch (IOException e) {
             throw new ChannelException(
@@ -84,8 +89,11 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 
     /**
      * Create a new instance using the given {@link ServerSocketChannel}.
+     * 1.2 有参构造方法，参数是 Java 原生的 ServerSocketChannel
      */
     public NioServerSocketChannel(ServerSocketChannel channel) {
+        // 调用父类的构造方法，注意 parent 参数为null
+        // key，感兴趣的事件为 Accept 事件
         super(null, channel, SelectionKey.OP_ACCEPT);
         config = new NioServerSocketChannelConfig(this, javaChannel().socket());
     }
