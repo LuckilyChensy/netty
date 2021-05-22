@@ -1130,7 +1130,10 @@ public abstract class AbstractByteBuf extends ByteBuf {
 
     @Override
     public int writeBytes(ScatteringByteChannel in, int length) throws IOException {
+        // 保证容量足够，里面有扩容的逻辑
         ensureWritable(length);
+        // key，调用setBytes()方法
+        // 第一个参数是写入的位置，第二参数是SocketChannel，第三个参数可写入的长度
         int writtenBytes = setBytes(writerIndex, in, length);
         if (writtenBytes > 0) {
             writerIndex += writtenBytes;
