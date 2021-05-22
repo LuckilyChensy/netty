@@ -377,6 +377,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         boolean selected = false;
         for (;;) {
             try {
+                // key，将EventLoop中的Selector与Java原生的Channel绑定在一起，并返回这个SelectionKey
+                // 注意，第三个参数是this，代表的是当前这个Netty中的Channel，我们这里就是NioServerSocketChannel
+                // 它作为Selection的attachment绑定到SelectionKey上，与JavaChannel和Selector是同一个级别的
                 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
                 return;
             } catch (CancelledKeyException e) {
