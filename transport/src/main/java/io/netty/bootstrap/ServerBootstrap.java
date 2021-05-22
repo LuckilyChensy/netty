@@ -129,7 +129,9 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
     @Override
     void init(Channel channel) {
+        // ServerBootstrap中的 Option 设置到 Channel 的 Config 中
         setChannelOptions(channel, newOptionsArray(), logger);
+        // 设置一些属性到Channel中，用法与Option一样
         setAttributes(channel, newAttributesArray());
 
         ChannelPipeline p = channel.pipeline();
@@ -139,15 +141,20 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         final Entry<ChannelOption<?>, Object>[] currentChildOptions = newOptionsArray(childOptions);
         final Entry<AttributeKey<?>, Object>[] currentChildAttrs = newAttributesArray(childAttrs);
 
+        // 将  ServerBootstrap中的 Handler设置到 ChannelPipeline 的最后
+        // ChannelInitializer的实现原理？
         p.addLast(new ChannelInitializer<Channel>() {
             @Override
             public void initChannel(final Channel ch) {
                 final ChannelPipeline pipeline = ch.pipeline();
+                // 第6步设置的 Handler
                 ChannelHandler handler = config.handler();
                 if (handler != null) {
                     pipeline.addLast(handler);
                 }
-
+                // 同时，又向ChannelPipeline的最后添加了一个叫作ServerBootstrapAcceptor的Handler
+                // 这是什么写法？
+                // ServerBootstrapAcceptor 的作用是什么？
                 ch.eventLoop().execute(new Runnable() {
                     @Override
                     public void run() {
