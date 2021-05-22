@@ -692,7 +692,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             }
             return;
         }
-
+        // 四种事件都有相应的判断交给 Channel 的 Unsafe 属性来处理
         try {
             int readyOps = k.readyOps();
             // We first need to call finishConnect() before try to trigger a read(...) or write(...) as otherwise
